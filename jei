@@ -1,0 +1,72 @@
+*
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Dashboard</h1>
+        <form id="search-form">
+            <input type="text" id="city-input" placeholder="Enter city name">
+            <button id="search-btn">Search</button>
+        </form>
+        <div id="weather-data"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+*`script.js`*
+```
+const searchForm = document.getElementById('search-form');
+const cityInput = document.getElementById('city-input');
+const searchBtn = document.getElementById('search-btn');
+const weatherDataDiv = document.getElementById('weather-data');
+
+searchBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const city = cityInput.value.trim();
+    if (city) {
+        fetchWeatherData(city);
+    }
+});
+
+async function fetchWeatherData(city) {
+    try {
+        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=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`);
+        const weatherData = response.data;
+        displayWeatherData(weatherData);
+    } catch (error) {
+        console.error(error);
+        displayError('Invalid city name or API error');
+    }
+}
+
+function displayWeatherData(weatherData) {
+    const temperature = weatherData.main.temp;
+    const humidity = weatherData.main.humidity;
+    const weatherCondition = weatherData.weather[0].description;
+    const weatherIcon = getWeatherIcon(weatherData.weather[0].icon);
+
+    weatherDataDiv.innerHTML = `
+        <h2>Weather in ${weatherData.name}</h2>
+        <p>Temperature: ${temperature}°C</p>
+        <p>Humidity: ${humidity}%</p>
+        <p>Weather Condition: ${weatherCondition}</p>
+        <img src="${weatherIcon}" alt="Weather Icon">
+    `;
+}
+
+function getWeatherIcon(iconCode) {
+    // Return the URL of the weather icon based on the icon code
+}
+
+function displayError(message) {
+    weatherDataDiv.innerHTML = `<p style="color: red;">${message}</p>`;
+}
